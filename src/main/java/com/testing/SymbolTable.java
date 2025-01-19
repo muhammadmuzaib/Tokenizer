@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Description: This class will manage the mapping of variables to their assigned integer values.
+ */
+
 public class SymbolTable {
     private Map<String, Integer> variables = new HashMap<>();
 
@@ -18,12 +22,14 @@ public class SymbolTable {
         return variables.get(var);
     }
 
-    public Set<Map.Entry<String, Integer>> getEntries() {
-        return variables.entrySet();
-    }
-
     public boolean contains(String varName) {
         return variables.containsKey(varName);
     }
+
+    //Prints all the variables and their corresponding values stored in the symbol tabe. "variable = value"
+    public void printAll() {
+        variables.forEach((key, value) -> System.out.println(key + " = " + value));
+    }
+
 }
 

@@ -3,18 +3,26 @@ package com.testing;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * Description: This class will take a lsit of tokens to validate their syntax, evalute expressions,
+ * and manage their assignments in the symbol table.
+ */
 public class Parser {
     private final ArrayList<Token> tokens;
     private int currentTokenIndex = 0;
     private SymbolTable symbolTable = new SymbolTable();
-    private int currentValue = 0;
+    private int currentValue = 0;   //This will hold the value fo the most recently assigned expression.
 
+    //constructor
     public Parser(ArrayList<Token> tokens) {
         this.tokens = tokens;
     }
 
     private Token currentToken() {
-        return currentTokenIndex < tokens.size() ? tokens.get(currentTokenIndex) : null;
+        if (currentTokenIndex < tokens.size()) {
+            return tokens.get(currentTokenIndex);
+        }
+        return null;
     }
 
     private void readNextToken() {
@@ -23,11 +31,13 @@ public class Parser {
         }
     }
 
+    //main method for parsing an expression. Expression = 1 or more terms combines using + or -.
     private void exp() {
         term();
         expPrime();
     }
 
+    //Helper method that handles terms which have '+' or '-'.
     private void expPrime() {
         Token token = currentToken();
         if (token instanceof Operator) {
@@ -40,6 +50,7 @@ public class Parser {
         }
     }
 
+    //Term = part of an expression, consisting of one or more factors which are combined using * or /.
     private void term() {
         factor();
         termPrime();
@@ -57,6 +68,8 @@ public class Parser {
         }
     }
 
+    //factor = smallest component of a term adn represents a single value or an expression inside a paranthesis.
+    //Will store a number, variable, or parenthesized expression.
     private void factor() {
         Token token = currentToken();
         boolean isNegative = false; // Flag for unary negation
@@ -68,6 +81,7 @@ public class Parser {
             token = currentToken();
         }
 
+        //When a number, directly sotre its numeric value.
         if (token instanceof Num) {
             Num numberToken = (Num) token;
             currentValue = numberToken.getValue();
@@ -75,7 +89,7 @@ public class Parser {
                 currentValue = -currentValue; // Apply negation
             }
             readNextToken(); // Consume the number token
-        } else if (token instanceof Identifier) {
+        } else if (token instanceof Identifier) { //when a variable, I retrieve stored value from the table and store that value.
             String varName = ((Identifier) token).getLexeme();
             currentValue = symbolTable.getValue(varName);
             if (isNegative) {
@@ -84,14 +98,14 @@ public class Parser {
             readNextToken(); // Consume the identifier
         } else if (token instanceof Operator && ((Operator) token).getLexeme().equals("(")) {
             readNextToken(); // Consume '('
-            exp(); // Evaluate the expression inside the parentheses
+            exp(); // let exp evaluate whats isnide the parenthesis.
             if (isNegative) {
-                currentValue = -currentValue; // Apply negation
+                currentValue = -currentValue;
             }
             if (!(currentToken() instanceof Operator && ((Operator) currentToken()).getLexeme().equals(")"))) {
                 throw new RuntimeException("Syntax error: expected ')'");
             }
-            readNextToken(); // Consume ')'
+            readNextToken();
         } else {
             throw new RuntimeException("Syntax error: expected a number, variable, unary operator, or '('");
         }
@@ -177,7 +191,7 @@ public class Parser {
                     divide = true;
                     readNextToken(); // Consume the operator
                 } else if (operator.equals("(") || operator.equals(")")) {
-                    // Handle parentheses (if implemented) TODO: FIX THIS
+                    // Handle parentheses  TODO: FIX THIS
                     readNextToken(); // Consume the parenthesis
                 } else {
                     throw new RuntimeException("Syntax error: invalid operator '" + operator + "'");
@@ -188,9 +202,7 @@ public class Parser {
     }
 
     public void printSymbolTable() {
-        for (Map.Entry<String, Integer> entry : symbolTable.getEntries()) {
-            System.out.println(entry.getKey() + " = " + entry.getValue());
-        }
+        symbolTable.printAll();
     }
 
     // Call this method instead of 'exp()' in 'parse()' for handling statements

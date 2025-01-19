@@ -13,8 +13,8 @@ public class Main {
         //String input = "x = 2; y = 1; z = x + y;"; //Output = 3: Pass Addition
         //String input = "x = 2; y = 1; z = x * y;"; //Output: 2: Pass Multiplication
         //String input = "x = 2; y = 2; z = x / y;"; //Output: 1: Pass Division
-        //String input = "x = -2; y = 2; z = x * y;"; // Output: -4: Pass negation
-        String input = "x = 2 y = 3";
+        String input = "x = -2; y = 2; z = x * y;"; // Output: -4: Pass negation
+        //String input = "x = 2 y = 3";  //Meant to fail
         ArrayList<Token> tokens = Tokenizer.tokenize(input);
 
         System.out.println("Tokens: " + tokens);
